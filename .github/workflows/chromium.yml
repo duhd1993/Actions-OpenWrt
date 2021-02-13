@@ -22,7 +22,7 @@ jobs:
       run: df -hT
       
     - name: fetch source
-    - run: |
+      run: |
         git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
         export PATH="$PATH:$(pwd)/depot_tools"
         git config --global core.precomposeUnicode true
