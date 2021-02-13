@@ -1,0 +1,60 @@
+name: Build Chromium
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Check space usage
+      if: (!cancelled())
+      run: df -hT
+      
+    - name: fetch source
+    - run: |
+        git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        export PATH="$PATH:$(pwd)/depot_tools"
+        git config --global core.precomposeUnicode true
+        mkdir chromium && cd chromium
+        fetch chromium
+        
+    - name: Check space usage again
+      if: (!cancelled())
+      run: df -hT
+        
+    - name: SSH connection to Actions
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+       
+    - name: build
+      run: |
+        cd src
+        gn gen out/Default
+        autoninja -C out/Default chrome
+
+    - name: Upload build
+      uses: actions/upload-artifact@main
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      with:
+        name: Chromium
+        path: out/Default/Chromium.app
+
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        retain_days: 1
+        keep_minimum_runs: 3
