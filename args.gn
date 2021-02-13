@@ -1,0 +1,16 @@
+target_cpu = "x64"
+is_debug = false
+is_component_build = true
+enable_nacl = true
+symbol_level = 0
+remove_webcore_debug_symbols = true
+enable_widevine = true
+enable_webrtc = true
+proprietary_codecs = true
+ffmpeg_branding = "Chrome"
+chrome_pgo_phase = 0
+full_wpo_on_official = false
+use_openh264 = true
+rtc_use_h264 = true
+rtc_use_lto = true
+is_official_build = true
