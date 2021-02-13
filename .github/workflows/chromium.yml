@@ -31,7 +31,7 @@ jobs:
         mkdir chromium && cd chromium
         fetch chromium
         
-     - name: Check space usage
+    - name: Check space usage again
       if: (!cancelled())
       run: df -hT
         
