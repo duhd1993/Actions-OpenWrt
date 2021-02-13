@@ -19,7 +19,9 @@ jobs:
 
     - name: Check space usage
       if: (!cancelled())
-      run: df -h
+      run: |
+        df -h
+        rm -rf /Applications/Xcode_11*
       
     - name: fetch source
       run: |
@@ -42,7 +44,7 @@ jobs:
        
     - name: build
       run: |
-        cd src
+        cd chromium/src
         gn gen out/Default
         autoninja -C out/Default chrome
 
@@ -51,7 +53,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
         name: Chromium
-        path: out/Default/Chromium.app
+        path: chromium/src/out/Default/Chromium.app
 
     - name: Delete workflow runs
       uses: GitRML/delete-workflow-runs@main
