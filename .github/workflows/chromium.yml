@@ -44,6 +44,7 @@ jobs:
        
     - name: build
       run: |
+        export PATH="$PATH:$(pwd)/depot_tools"
         cd chromium/src
         gn gen out/Default
         autoninja -C out/Default chrome
